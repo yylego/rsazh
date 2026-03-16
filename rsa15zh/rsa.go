@@ -58,7 +58,9 @@ func (r *Rsa私钥) M签名(v明文 []byte) ([]byte, error) {
 // 接收加密的密文字节作为输入并解密
 // 成功时返回解密后的明文字节，否则返回异常
 func (r *Rsa私钥) M解密(v密文 []byte) ([]byte, error) {
-	return rsa.DecryptPKCS1v15(rand.Reader, r.pri, v密文)
+	// Keeping PKCS1v15 to remain compatible with existing encrypted data, switching to OAEP would make old ciphertext non-decryptable
+	// 保留 PKCS1v15 以兼容已有加密数据，切换到 OAEP 会导致旧密文无法解密
+	return rsa.DecryptPKCS1v15(rand.Reader, r.pri, v密文) //nolint:staticcheck
 }
 
 // B导出 exports private cryptographic components as PKCS#8 format bytes
@@ -113,11 +115,13 @@ func New公钥(puk *rsa.PublicKey) *Rsa公钥 {
 // 接收明文字节作为输入并使用公钥组件加密
 // 成功时返回加密后的密文字节，否则返回异常
 func (r *Rsa公钥) M加密(v明文 []byte) ([]byte, error) {
-	return rsa.EncryptPKCS1v15(rand.Reader, r.pub, v明文)
+	// Keeping PKCS1v15 to remain compatible with existing systems, switching to OAEP would break decryption of data encrypted with this scheme
+	// 保留 PKCS1v15 以兼容已有系统，切换到 OAEP 会导致用此方案加密的数据无法解密
+	return rsa.EncryptPKCS1v15(rand.Reader, r.pub, v明文) //nolint:staticcheck
 }
 
 // M验签 verifies signature using SHA256 hash and PKCS#1 v1.5 verification scheme
-// Takes plaintext and signature bytes as inputs and validates authenticity
+// Takes plaintext and signature bytes as inputs and validates the signature
 // Returns nothing when signature is authentic, otherwise returns an exception
 //
 // M验签 使用 SHA256 哈希和 PKCS#1 v1.5 验签方案验证签名
