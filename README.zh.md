@@ -1,9 +1,12 @@
+<!-- TEMPLATE (ZH) BEGIN: BADGES -->
+
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yylego/rsazh/release.yml?branch=main&label=BUILD)](https://github.com/yylego/rsazh/actions/workflows/release.yml?query=branch%3Amain)
 [![GoDoc](https://pkg.go.dev/badge/github.com/yylego/rsazh)](https://pkg.go.dev/github.com/yylego/rsazh)
 [![Coverage Status](https://img.shields.io/coveralls/github/yylego/rsazh/main.svg)](https://coveralls.io/github/yylego/rsazh?branch=main)
-[![Supported Go Versions](https://img.shields.io/badge/Go-1.22--1.25-lightgrey.svg)](https://go.dev/)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.26%2B-lightgrey.svg)](https://go.dev/)
 [![GitHub Release](https://img.shields.io/github/release/yylego/rsazh.svg)](https://github.com/yylego/rsazh/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yylego/rsazh)](https://goreportcard.com/report/github.com/yylego/rsazh)
+<!-- TEMPLATE (ZH) CLOSE: BADGES -->
 
 # rsazh
 
@@ -12,10 +15,12 @@
 ---
 
 <!-- TEMPLATE (ZH) BEGIN: LANGUAGE NAVIGATION -->
+
 ## 英文文档
 
 [ENGLISH README](README.md)
-<!-- TEMPLATE (ZH) END: LANGUAGE NAVIGATION -->
+
+<!-- TEMPLATE (ZH) CLOSE: LANGUAGE NAVIGATION -->
 
 ---
 
@@ -27,11 +32,11 @@
 
 ## 主要特性
 
-🔐 **RSA 加密**: 使用中文函数名的 PKCS#1 v1.5 加密和解密
-🖋️ **数字签名**: 基于 SHA256 的签名和验签操作
-🔑 **密钥管理**: 生成、加载、导出 PKCS#8/PKIX 格式的 RSA 密钥组件
-📦 **简单 API**: 直观的中文命名方法封装 Go crypto/rsa 包
-🛡️ **类型保护**: 独立的类型避免公私混淆
+- 🔐 **RSA 加密**: 使用中文函数名的 PKCS#1 v1.5 加密和解密
+- 🖋️ **签名**: 基于 SHA256 的签名和验签操作
+- 🔑 **RSA 组件**: 生成、加载、导出 PKCS#8/PKIX 格式的 RSA 密钥组件
+- 📦 **简单 API**: 直观的中文命名方法封装 Go crypto/rsa 包
+- 🛡️ **类型保护**: 独立的类型避免公私混淆
 
 ## 安装
 
@@ -58,19 +63,19 @@ import (
 
 func main() {
 	// 生成 2048 位 RSA 私钥
-	v私钥, err := rsa15zh.R随机私钥(2048)
+	v私钥, err := rsa15zh.R随机PKCS8私钥(2048)
 	must.Done(err)
 	fmt.Println("生成私钥:", len(v私钥), "字节")
 
 	// 从私钥提取公钥
-	v公钥, err := rsa15zh.R获得公钥(v私钥)
+	v公钥, err := rsa15zh.R获得PKIX公钥(v私钥)
 	must.Done(err)
 	fmt.Println("提取公钥:", len(v公钥), "字节")
 
 	// 加载密钥
-	r私钥, err := rsa15zh.F装载私钥(v私钥)
+	r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥)
 	must.Done(err)
-	r公钥, err := rsa15zh.F装载公钥(v公钥)
+	r公钥, err := rsa15zh.F装载PKIX公钥(v公钥)
 	must.Done(err)
 
 	// 加密测试
@@ -87,9 +92,9 @@ func main() {
 	fmt.Println("已解密:", string(v明文))
 
 	// 导出密钥
-	exportedPrivate, err := r私钥.B导出()
+	exportedPrivate, err := r私钥.B导出PKCS8()
 	must.Done(err)
-	exportedPublic, err := r公钥.B导出()
+	exportedPublic, err := r公钥.B导出PKIX()
 	must.Done(err)
 
 	fmt.Println("\n导出私钥:", len(exportedPrivate), "字节")
@@ -116,10 +121,10 @@ import (
 
 func main() {
 	// 生成密钥
-	v私钥, err := rsa15zh.R随机私钥(2048)
+	v私钥, err := rsa15zh.R随机PKCS8私钥(2048)
 	must.Done(err)
 
-	r私钥, err := rsa15zh.F装载私钥(v私钥)
+	r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥)
 	must.Done(err)
 
 	// 签名消息
@@ -159,52 +164,64 @@ func main() {
 
 ### 密钥生成函数
 
-| 函数 | 描述 (ZH) | Description (EN) |
-|------|-----------|-----------------|
-| `R随机私钥(n位数 int)` | 生成新的 RSA 私钥 | Generates new RSA private key |
-| `R获得公钥(privateKeyBytes []byte)` | 从私钥字节中提取公钥 | Extracts public key from private key bytes |
-| `F装载私钥(v私钥 []byte)` | 从 PKCS#8 字节加载私钥 | Loads private key from PKCS#8 bytes |
-| `F装载公钥(v公钥 []byte)` | 从 PKIX 字节加载公钥 | Loads public key from PKIX bytes |
+| 函数                                    | 描述 (ZH)                            | Description (EN)                                           |
+| --------------------------------------- | ------------------------------------ | ---------------------------------------------------------- |
+| `R随机PKCS8私钥(n位数 int)`             | 生成 PKCS#8 DER 私钥字节             | Generates PKCS#8 DER private bytes                         |
+| `R获得PKIX公钥(privateKeyBytes []byte)` | 从 PKCS#8 DER 私钥提取 PKIX DER 公钥 | Converts PKCS#8 DER private bytes to PKIX DER public bytes |
+| `F装载PKCS8私钥(v私钥 []byte)`          | 从 PKCS#8 DER 字节加载私钥           | Loads private components from PKCS#8 DER bytes             |
+| `F装载PKIX公钥(v公钥 []byte)`           | 从 PKIX DER 字节加载公钥             | Loads public components from PKIX DER bytes                |
 
 ### 私钥方法 (Rsa私钥)
 
-| 方法 | 描述 (ZH) | Description (EN) |
-|------|-----------|-----------------|
-| `M签名(v明文 []byte)` | 使用 SHA256 对明文签名 | Signs plaintext using SHA256 |
-| `M解密(v密文 []byte)` | 解密密文 | Decrypts ciphertext |
-| `B导出()` | 导出私钥为 PKCS#8 字节 | Exports private key as PKCS#8 bytes |
-| `P公钥()` | 从私钥中提取公钥 | Extracts public key from private key |
+`F装载PKCS1私钥Base64` 接收标准 Base64 编码的 PKCS#1 DER 私钥，与接收 PKCS#8 DER 字节的 `F装载PKCS8私钥` 区分。`M解密PKCS1Base64(privateBase64, ciphertextBase64)` 合并装载与解密；已有私钥实例可调用 `M解密Base64(ciphertextBase64)`。两者沿用 PKCS#1 v1.5 方案，返回解码、解析或解密错误，不打印密钥内容。
+
+| 方法                        | 描述 (ZH)                                               | Description (EN)                                         |
+| --------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| `M签名(v明文 []byte)`       | 使用 SHA256 对明文签名                                  | Signs plaintext using SHA256                             |
+| `M解密(v密文 []byte)`       | 解密密文                                                | Decrypts ciphertext                                      |
+| `M解密Base64(s密文 string)` | 解码标准 Base64 密文并解密为字节                        | Decodes standard Base64 ciphertext and decrypts to bytes |
+| `B导出PKCS1Base64()`        | 导出与 `F装载PKCS1私钥Base64` 配对的 PKCS#1 Base64 私钥 | Exports PKCS#1 DER as standard Base64                    |
+| `B导出PKCS8()`              | 导出私钥为 PKCS#8 DER 字节                              | Exports private components as PKCS#8 DER bytes           |
+| `P公钥()`                   | 从私钥中提取公钥                                        | Extracts public key from private key                     |
 
 ### 公钥方法 (Rsa公钥)
 
-| 方法 | 描述 (ZH) | Description (EN) |
-|------|-----------|-----------------|
-| `M加密(v明文 []byte)` | 加密明文 | Encrypts plaintext |
-| `M验签(v明文 []byte, v签名 []byte)` | 使用 SHA256 验证签名 | Verifies signature using SHA256 |
-| `B导出()` | 导出公钥为 PKIX 字节 | Exports public key as PKIX bytes |
+| 方法                                | 描述 (ZH)                          | Description (EN)                                      |
+| ----------------------------------- | ---------------------------------- | ----------------------------------------------------- |
+| `M加密(v明文 []byte)`               | 加密明文                           | Encrypts plaintext                                    |
+| `M加密Base64(v明文 []byte)`         | 加密明文字节并返回标准 Base64 密文 | Encrypts bytes and returns standard Base64 ciphertext |
+| `M验签(v明文 []byte, v签名 []byte)` | 使用 SHA256 验证签名               | Verifies signature using SHA256                       |
+| `B导出PKIX()`                       | 导出公钥为 PKIX DER 字节           | Exports public components as PKIX DER bytes           |
 
 ## 示例
 
 ### 完整工作流和密钥持久化
 
 **生成并保存密钥:**
+
 ```go
-v私钥bytes, err := rsa15zh.R随机私钥(2048)
+v私钥bytes, err := rsa15zh.R随机PKCS8私钥(2048)
+must.Done(err)
 私钥String := base64.StdEncoding.EncodeToString(v私钥bytes)
 // 将 私钥String 保存到数据库/文件
 ```
 
 **加载并使用密钥:**
+
 ```go
-v私钥restored, _ := base64.StdEncoding.DecodeString(私钥String)
-r私钥, _ := rsa15zh.F装载私钥(v私钥restored)
+v私钥restored, err := base64.StdEncoding.DecodeString(私钥String)
+must.Done(err)
+r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥restored)
+must.Done(err)
 // 使用 r私钥 进行签名或解密
 ```
 
 **提取公钥:**
+
 ```go
 r公钥 := r私钥.P公钥()
-v导出, _ := r公钥.B导出()
+v导出, err := r公钥.B导出PKIX()
+must.Done(err)
 // 将 v导出 分享给他人
 ```
 
@@ -213,25 +230,29 @@ v导出, _ := r公钥.B导出()
 ## 实现细节
 
 ### 加密方案
+
 - **算法**: RSA with PKCS#1 v1.5 填充
 - **长度**: 支持 2048, 3072, 4096 位（推荐 2048）
 - **格式**: PKCS#8 (私钥组件), PKIX (公钥组件)
 
 ### 签名方案
+
 - **哈希函数**: SHA256
 - **签名算法**: RSA PKCS#1 v1.5 签名
-- **输出**: Base64 编码的签名字节
+- **输出**: 原始签名字节；示例为便于展示才转成 Base64
 
 ## 命名规范
 
-- `R` 前缀: 随机生成函数 (R随机私钥, R获得公钥)
-- `F` 前缀: 加载/初始化函数 (F装载私钥, F装载公钥)
+- `R` 前缀: 生成与派生函数 (R随机PKCS8私钥, R获得PKIX公钥)
+- `F` 前缀: 装载函数 (F装载PKCS8私钥, F装载PKIX公钥)
 - `M` 前缀: 主要操作方法 (M加密, M解密, M签名, M验签)
-- `B` 前缀: 字节导出方法 (B导出)
+- `B` 前缀: 导出方法 (B导出PKCS8, B导出PKIX, B导出PKCS1Base64)
 - `P` 前缀: 提取方法 (P公钥)
 
+PKCS8 / PKCS1 / PKIX 标明 DER 编码格式。Base64 后缀表示标准 Base64 文本，不代表 PEM。直接处理字节的加密、解密方法保留 `M加密` / `M解密`。
+
 <!-- TEMPLATE (ZH) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-11-20 04:26:32.402216 +0000 UTC -->
+<!-- VERSION 2025-11-25 03:52:28.131064 +0000 UTC -->
 
 ## 📄 许可证类型
 
@@ -245,9 +266,9 @@ MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 - 🐛 **问题报告？** 在 GitHub 上提交问题并附上重现步骤
 - 💡 **新颖思路？** 创建 issue 讨论
-- 📖 **文档疑惑？** 报告问题，帮助我们改进文档
+- 📖 **文档疑惑？** 报告问题，帮助我们完善文档
 - 🚀 **需要功能？** 分享使用场景，帮助理解需求
-- ⚡ **性能瓶颈？** 报告慢操作，帮助我们优化性能
+- ⚡ **性能瓶颈？** 报告慢操作，协助解决性能问题
 - 🔧 **配置困扰？** 询问复杂设置的相关问题
 - 📢 **关注进展？** 关注仓库以获取新版本和功能
 - 🌟 **成功案例？** 分享这个包如何改善工作流程
@@ -265,7 +286,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE)。
 4. **分支**：创建功能分支（`git checkout -b feature/xxx`）
 5. **编码**：实现您的更改并编写全面的测试
 6. **测试**：（Golang 项目）确保测试通过（`go test ./...`）并遵循 Go 代码风格约定
-7. **文档**：为面向用户的更改更新文档，并使用有意义的提交消息
+7. **文档**：面向用户的更改需要更新文档
 8. **暂存**：暂存更改（`git add .`）
 9. **提交**：提交更改（`git commit -m "Add feature xxx"`）确保向后兼容的代码
 10. **推送**：推送到分支（`git push origin feature/xxx`）
@@ -277,7 +298,7 @@ MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 ## 🌟 项目支持
 
-非常欢迎通过提交 Merge Request 和报告问题来为此项目做出贡献。
+非常欢迎通过提交 Merge Request 和报告问题来贡献此项目。
 
 **项目支持：**
 
@@ -288,4 +309,13 @@ MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 **祝你用这个包编程愉快！** 🎉🎉🎉
 
-<!-- TEMPLATE (ZH) END: STANDARD PROJECT FOOTER -->
+<!-- TEMPLATE (ZH) CLOSE: STANDARD PROJECT FOOTER -->
+
+---
+
+<!-- TEMPLATE (ZH) BEGIN: GITHUB STARS -->
+
+## GitHub 标星点赞
+
+[![Stargazers](https://starchart.cc/yylego/rsazh.svg?variant=adaptive)](https://starchart.cc/yylego/rsazh)
+<!-- TEMPLATE (ZH) CLOSE: GITHUB STARS -->

@@ -9,8 +9,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/yylego/rsazh/rsa15zh"
 	"github.com/yylego/must"
+	"github.com/yylego/rsazh/rsa15zh"
 )
 
 func main() {
@@ -18,10 +18,10 @@ func main() {
 
 	// Step 1: Generate and export keys (第1步：生成并导出密钥)
 	fmt.Println("=== Key Generation (密钥生成) ===")
-	v私钥bytes, err := rsa15zh.R随机私钥(2048)
+	v私钥bytes, err := rsa15zh.R随机PKCS8私钥(2048)
 	must.Done(err)
 
-	v公钥bytes, err := rsa15zh.R获得公钥(v私钥bytes)
+	v公钥bytes, err := rsa15zh.R获得PKIX公钥(v私钥bytes)
 	must.Done(err)
 
 	// Encode to base64 strings (编码为 base64 字符串)
@@ -38,9 +38,9 @@ func main() {
 	v公钥restored, err := base64.StdEncoding.DecodeString(公钥String)
 	must.Done(err)
 
-	r私钥, err := rsa15zh.F装载私钥(v私钥restored)
+	r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥restored)
 	must.Done(err)
-	r公钥, err := rsa15zh.F装载公钥(v公钥restored)
+	r公钥, err := rsa15zh.F装载PKIX公钥(v公钥restored)
 	must.Done(err)
 
 	// Step 3: Encrypt and decrypt (第3步：加密和解密)
@@ -66,17 +66,16 @@ func main() {
 	fmt.Println("Signature (签名):", base64.StdEncoding.EncodeToString(signature)[:60]+"...")
 
 	err = r公钥.M验签([]byte(document), signature)
-	if err == nil {
-		fmt.Println("Verification (验证): ✓ Signature is authentic (签名真实有效)")
-	} else {
+	if err != nil {
 		fmt.Println("Verification (验证): ✗ Signature is invalid (签名无效)")
+		return
 	}
+	fmt.Println("Verification (验证): ✓ Signature is authentic (签名真实有效)")
 
 	// Step 5: Extract public key from private key (第5步：从私钥提取公钥)
 	fmt.Println("\n=== Public Key Extraction (公钥提取) ===")
 	r公钥FromPrivate := r私钥.P公钥()
 	err = r公钥FromPrivate.M验签([]byte(document), signature)
-	if err == nil {
-		fmt.Println("Extracted public key works (提取的公钥有效): ✓")
-	}
+	must.Done(err)
+	fmt.Println("Extracted public key works (提取的公钥有效): ✓")
 }

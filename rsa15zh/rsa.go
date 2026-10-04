@@ -45,9 +45,8 @@ func New私钥(pri *rsa.PrivateKey) *Rsa私钥 {
 // 接收明文字节作为输入并生成数字签名
 // 成功时返回签名字节，否则返回异常
 func (r *Rsa私钥) M签名(v明文 []byte) ([]byte, error) {
-	hash := sha256.New()
-	hash.Write(v明文)
-	return rsa.SignPKCS1v15(rand.Reader, r.pri, crypto.SHA256, hash.Sum(nil))
+	hash := sha256.Sum256(v明文)
+	return rsa.SignPKCS1v15(rand.Reader, r.pri, crypto.SHA256, hash[:])
 }
 
 // M解密 decrypts ciphertext using PKCS#1 v1.5 decryption scheme
@@ -63,14 +62,14 @@ func (r *Rsa私钥) M解密(v密文 []byte) ([]byte, error) {
 	return rsa.DecryptPKCS1v15(rand.Reader, r.pri, v密文) //nolint:staticcheck
 }
 
-// B导出 exports private cryptographic components as PKCS#8 format bytes
+// B导出PKCS8 exports private cryptographic components as PKCS#8 DER bytes.
 // Serializes the private components to standard PKCS#8 encoding
 // Returns serialized bytes on success, otherwise returns an exception
 //
-// B导出 将私钥组件导出为 PKCS#8 格式字节
+// B导出PKCS8 将私钥组件导出为 PKCS#8 DER 字节。
 // 将私钥组件序列化为标准 PKCS#8 编码
 // 成功时返回序列化字节，否则返回异常
-func (r *Rsa私钥) B导出() ([]byte, error) {
+func (r *Rsa私钥) B导出PKCS8() ([]byte, error) {
 	// Export to PKCS#8 format (more cross-platform compatible than PKCS#1)
 	// 导出为 PKCS#8 格式（比 PKCS#1 跨平台兼容性更佳）
 	priBytes, err := x509.MarshalPKCS8PrivateKey(r.pri)
@@ -128,19 +127,18 @@ func (r *Rsa公钥) M加密(v明文 []byte) ([]byte, error) {
 // 接收明文和签名字节作为输入并验证真实性
 // 签名有效时返回空值，否则返回异常
 func (r *Rsa公钥) M验签(v明文 []byte, v签名 []byte) error {
-	hash := sha256.New()
-	hash.Write(v明文)
-	return rsa.VerifyPKCS1v15(r.pub, crypto.SHA256, hash.Sum(nil), v签名)
+	hash := sha256.Sum256(v明文)
+	return rsa.VerifyPKCS1v15(r.pub, crypto.SHA256, hash[:], v签名)
 }
 
-// B导出 exports public cryptographic components as PKIX format bytes
+// B导出PKIX exports public cryptographic components as PKIX DER bytes.
 // Serializes the public components to standard PKIX encoding
 // Returns serialized bytes on success, otherwise returns an exception
 //
-// B导出 将公钥组件导出为 PKIX 格式字节
+// B导出PKIX 将公钥组件导出为 PKIX DER 字节。
 // 将公钥组件序列化为标准 PKIX 编码
 // 成功时返回序列化字节，否则返回异常
-func (r *Rsa公钥) B导出() ([]byte, error) {
+func (r *Rsa公钥) B导出PKIX() ([]byte, error) {
 	// Encode public cryptographic components to PKIX format byte slice
 	// 将公钥组件编码为 PKIX 格式的字节切片
 	pubBytes, err := x509.MarshalPKIXPublicKey(r.pub)

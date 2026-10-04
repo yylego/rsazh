@@ -9,27 +9,27 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/yylego/rsazh/rsa15zh"
 	"github.com/yylego/must"
+	"github.com/yylego/rsazh/rsa15zh"
 )
 
 func main() {
 	// Demo: Basic RSA encryption and decryption (基础 RSA 加密解密演示)
 
 	// Generate 2048-bit RSA private key (生成 2048 位 RSA 私钥)
-	v私钥, err := rsa15zh.R随机私钥(2048)
+	v私钥, err := rsa15zh.R随机PKCS8私钥(2048)
 	must.Done(err)
 	fmt.Println("Generated private key (生成私钥):", len(v私钥), "bytes")
 
 	// Extract public key from private key (从私钥提取公钥)
-	v公钥, err := rsa15zh.R获得公钥(v私钥)
+	v公钥, err := rsa15zh.R获得PKIX公钥(v私钥)
 	must.Done(err)
 	fmt.Println("Extracted public key (提取公钥):", len(v公钥), "bytes")
 
 	// Load keys (加载密钥)
-	r私钥, err := rsa15zh.F装载私钥(v私钥)
+	r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥)
 	must.Done(err)
-	r公钥, err := rsa15zh.F装载公钥(v公钥)
+	r公钥, err := rsa15zh.F装载PKIX公钥(v公钥)
 	must.Done(err)
 
 	// Encryption test (加密测试)
@@ -46,9 +46,9 @@ func main() {
 	fmt.Println("Decrypted (已解密):", string(v明文))
 
 	// Export keys (导出密钥)
-	exportedPrivate, err := r私钥.B导出()
+	exportedPrivate, err := r私钥.B导出PKCS8()
 	must.Done(err)
-	exportedPublic, err := r公钥.B导出()
+	exportedPublic, err := r公钥.B导出PKIX()
 	must.Done(err)
 
 	fmt.Println("\nExported private key (导出私钥):", len(exportedPrivate), "bytes")

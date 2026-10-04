@@ -9,18 +9,18 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/yylego/rsazh/rsa15zh"
 	"github.com/yylego/must"
+	"github.com/yylego/rsazh/rsa15zh"
 )
 
 func main() {
 	// Demo: RSA digital signature and verification (RSA 数字签名和验证演示)
 
 	// Generate keys (生成密钥)
-	v私钥, err := rsa15zh.R随机私钥(2048)
+	v私钥, err := rsa15zh.R随机PKCS8私钥(2048)
 	must.Done(err)
 
-	r私钥, err := rsa15zh.F装载私钥(v私钥)
+	r私钥, err := rsa15zh.F装载PKCS8私钥(v私钥)
 	must.Done(err)
 
 	// Sign message (签名消息)
@@ -53,9 +53,9 @@ func main() {
 	}
 
 	// Export keys test (导出密钥测试)
-	v导出私钥, err := r私钥.B导出()
+	v导出私钥, err := r私钥.B导出PKCS8()
 	must.Done(err)
-	v导出公钥, err := r公钥.B导出()
+	v导出公钥, err := r公钥.B导出PKIX()
 	must.Done(err)
 
 	fmt.Println("\nExported keys (导出密钥):")
